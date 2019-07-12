@@ -59,6 +59,8 @@ sysbench.cmdline.options = {
    {"Use AUTO_INCREMENT column as Primary Key (for MySQL), " ..
        "or its alternatives in other DBMS. When disabled, use " ..
        "client-generated IDs", true},
+   pk_type =
+   {"Specify Pirmary Key Type", "INTEGER"},
    create_table_options =
       {"Extra CREATE TABLE options", ""},
    skip_trx =
@@ -169,17 +171,17 @@ function create_table(drv, con, table_num)
    if drv:name() == "mysql"
    then
       if sysbench.opt.auto_inc then
-         id_def = "INTEGER NOT NULL AUTO_INCREMENT"
+         id_def = sysbench.opt.pk_type .. " NOT NULL AUTO_INCREMENT"
       else
-         id_def = "INTEGER NOT NULL"
+         id_def = sysbench.opt.pk_type .. " NOT NULL"
       end
       engine_def = "/*! ENGINE = " .. sysbench.opt.mysql_storage_engine .. " */"
    elseif drv:name() == "pgsql"
    then
       if not sysbench.opt.auto_inc then
-         id_def = "INTEGER NOT NULL"
+         id_def = sysbench.opt.pk_type .. " NOT NULL"
       elseif pgsql_variant == 'redshift' then
-        id_def = "INTEGER IDENTITY(1,1)"
+         id_def = sysbench.opt.pk_type .. " IDENTITY(1,1)"
       else
         id_def = "SERIAL"
       end
